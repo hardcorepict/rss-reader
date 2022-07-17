@@ -4,6 +4,7 @@ from unittest import mock
 from django.urls import reverse
 from django.utils.http import urlencode
 from rest_framework.test import APIClient as DRFClient
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class APIClient(DRFClient):
@@ -36,3 +37,8 @@ def reverse_querystring(
     if query_kwargs:
         return "{}?{}".format(base_url, urlencode(query_kwargs))
     return base_url
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    return {"refresh": str(refresh), "access": str(refresh.access_token)}

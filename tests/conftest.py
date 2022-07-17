@@ -1,6 +1,6 @@
 import factories as f
 import pytest
-from utils import APIClient
+from utils import APIClient, get_tokens_for_user
 
 
 @pytest.fixture
@@ -24,3 +24,16 @@ def celery_config():
         "broker_url": "redis://",
         "result_backend": "redis://",
     }
+
+
+@pytest.fixture
+def test_user():
+    return f.UserFactory.create()
+
+
+@pytest.fixture
+def test_user_api_client(api_client, test_user):
+    tokens = get_tokens_for_user(test_user)
+    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {tokens['access']}")
+    api_client.login(test_user)
+    return api_client

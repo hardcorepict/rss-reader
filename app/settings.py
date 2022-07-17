@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "mail",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -100,6 +101,8 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
+
+AUTH_USER_MODEL = "user.User"
 
 # Email
 

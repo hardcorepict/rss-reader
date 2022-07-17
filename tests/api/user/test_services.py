@@ -13,7 +13,7 @@ class TestUserService:
 
         users = User.objects.all()
 
-        assert len(users) == 1
+        assert users.count() == 1
         assert users[0].email == user_data["email"]
 
     def test_create_user__when_no_email(self):

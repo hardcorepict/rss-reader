@@ -1,0 +1,9 @@
+{% block subject %}Welcome!{% endblock %}
+{% block plain %}
+  Hi {{email}},
+
+  You just signed up for my website, using:
+      username: {{email}}
+
+  Thanks, you rock!
+{% endblock %}

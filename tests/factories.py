@@ -1,7 +1,9 @@
 import factory
+import pytz
 
 from channel.models import Channel, Subscription
 from mail.services import Mail
+from post.models import Action, Post
 from user.models import User
 
 
@@ -33,3 +35,22 @@ class SubscriptionFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Subscription
+
+
+class PostFactory(factory.django.DjangoModelFactory):
+    title = factory.Sequence(lambda n: f"Post_{n}")
+    channel = factory.SubFactory("tests.factories.ChannelFactory")
+    url = factory.LazyAttribute(lambda obj: f"{obj.channel.url}/{obj.title}")
+    description = factory.Faker("text")
+    published_date = factory.Faker("date_time", tzinfo=pytz.UTC)
+
+    class Meta:
+        model = Post
+
+
+class ActionFactory(factory.django.DjangoModelFactory):
+    user = factory.SubFactory("tests.factories.UserFactory")
+    post = factory.SubFactory("tests.factories.PostFactory")
+
+    class Meta:
+        model = Action

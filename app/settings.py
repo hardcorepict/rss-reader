@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "mail",
     "user",
     "channel",
+    "post",
 ]
 
 MIDDLEWARE = [
@@ -38,6 +39,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "querycount.middleware.QueryCountMiddleware",
 ]
 
 ROOT_URLCONF = "app.urls"
@@ -116,3 +118,7 @@ ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
+
+QUERYCOUNT = {
+    "DISPLAY_DUPLICATES": 5,
+}

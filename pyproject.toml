@@ -25,6 +25,8 @@ Faker = "^13.15.0"
 pytest-django = "^4.5.2"
 celery = {extras = ["pytest"], version = "^5.2.7"}
 pytest-celery = "^0.0.0"
+django-querycount = "^0.7.0"
+pytest-cov = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

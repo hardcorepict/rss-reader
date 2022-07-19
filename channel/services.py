@@ -1,4 +1,6 @@
-from app.base.services import BaseService
+import urllib.parse
+
+from app.base.services import BaseParser, BaseService
 from user.models import User
 
 from .exceptions import AlreadySusbcribed, NotSubscribed
@@ -32,3 +34,19 @@ class SubscriptionService(BaseService):
         except Subscription.DoesNotExist:
             raise NotSubscribed
         subscription.delete()
+
+
+class RssChannelParser(BaseParser):
+    def __init__(self, url):
+        super().__init__(url)
+        self.links = []
+
+    def get_rss(self):
+        self.parse()
+        links = self.soup.find_all("link", attrs={"type": "application/rss+xml"})
+        return [self._make_rss(link) for link in links]
+
+    def _make_rss(self, data):
+        return Channel(
+            title=data["title"], url=urllib.parse.urljoin(self.url, data["href"])
+        )

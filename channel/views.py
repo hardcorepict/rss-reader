@@ -8,8 +8,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .models import Channel
-from .serializers import ChannelSerializer, FeedSerializer
-from .services import ChannelService, SubscriptionService
+from .serializers import (
+    ChannelSerializer,
+    FeedSerializer,
+    RssChannelSerializer,
+    UrlChannelSerializer,
+)
+from .services import ChannelService, RssChannelParser, SubscriptionService
 
 
 class ChannelViewSet(GenericViewSet):
@@ -48,3 +53,12 @@ class ChannelViewSet(GenericViewSet):
         srv = SubscriptionService.build_from_request(request)
         srv.unsubscribe(channel)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=["POST"], permission_classes=[IsAuthenticated])
+    def get_rss(self, request):
+        serializer = UrlChannelSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        service = RssChannelParser(**serializer.validated_data)
+        rss = service.get_rss()
+        response_serializer = RssChannelSerializer(rss, many=True)
+        return Response(response_serializer.data)

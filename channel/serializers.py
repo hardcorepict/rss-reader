@@ -12,3 +12,13 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
 class FeedSerializer(serializers.Serializer):
     title = serializers.CharField()
     url = serializers.URLField()
+
+
+class UrlChannelSerializer(serializers.Serializer):
+    url = serializers.URLField(required=True)
+
+
+class RssChannelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Channel
+        fields = ["url", "title"]

@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 from django.urls import reverse
 
@@ -84,3 +86,29 @@ class TestChannelViewSet:
         response = test_user_api_client.post(url)
 
         assert response.status_code == 404
+
+    def test_get_rss(self, test_user_api_client):
+        data = {"url": "http://test.comm"}
+        channel = f.ChannelFactory()
+        fake_data = [channel]
+
+        url = reverse("channels-get-rss")
+
+        with mock.patch(
+            "channel.services.RssChannelParser.get_rss", return_value=fake_data
+        ):
+            response = test_user_api_client.post(url, data=data)
+
+        assert response.status_code == 200
+
+        response_data = get_response_content(response)
+        assert response_data[0]["title"] == channel.title
+        assert response_data[0]["url"] == channel.url
+
+    def test_get_rss__when_wrong_url(self, test_user_api_client):
+        data = {"url": "test.com"}
+
+        url = reverse("channels-get-rss")
+        response = test_user_api_client.post(url, data=data)
+
+        assert response.status_code == 400

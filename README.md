@@ -8,7 +8,8 @@ How to start application for local development:
    python manage.py migrate
 
 3. Start celery worker:
-   celery -A rss-reader worker -l INFO
+   celery -A app worker -l INFO
+   celery -A app beat
 
 4. Start server:
    python manage.py runserver

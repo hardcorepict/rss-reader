@@ -31,6 +31,7 @@ pytest-celery = "^0.0.0"
 django-querycount = "^0.7.0"
 pytest-cov = "^3.0.0"
 pytest-mock = "^3.8.2"
+flake8 = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

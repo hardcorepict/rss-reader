@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from post.tasks import fetch_posts_by_channel
+
 from .models import Channel
 from .serializers import (
     ChannelSerializer,
@@ -62,3 +64,9 @@ class ChannelViewSet(GenericViewSet):
         rss = service.get_rss()
         response_serializer = RssChannelSerializer(rss, many=True)
         return Response(response_serializer.data)
+
+    @action(detail=True, methods=["GET"], permission_classes=[IsAuthenticated])
+    def refresh(self, request, pk: int = None):
+        channel = self.get_object()
+        fetch_posts_by_channel(channel)
+        return Response(status=status.HTTP_204_NO_CONTENT)

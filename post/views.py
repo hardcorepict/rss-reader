@@ -21,7 +21,9 @@ class PostViewSet(GenericViewSet, mixins.ListModelMixin):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Post.objects.filter(channel__subscriptions__user=user)
+        queryset = Post.objects.filter(
+            channel__subscriptions__user=user
+        ).select_related("channel")
         return queryset
 
     @action(detail=True, methods=["POST"], permission_classes=[IsAuthenticated])

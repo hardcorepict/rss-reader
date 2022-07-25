@@ -1,4 +1,5 @@
 from abc import ABC
+from datetime import datetime, timezone
 from typing import TypeVar
 
 import requests
@@ -22,10 +23,11 @@ class BaseService:
 
 
 class BaseParser(ABC):
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, parser: str = "lxml") -> None:
         self.url = url
         self.page = ""
         self.soup = None
+        self.parser = parser
 
     def get_page(self) -> None:
         try:
@@ -37,7 +39,7 @@ class BaseParser(ABC):
 
     def make_soup(self) -> None:
         try:
-            self.soup = BeautifulSoup(self.page, "lxml")
+            self.soup = BeautifulSoup(self.page, self.parser)
         except Exception as e:
             print(f"Cannot parse the page: {self.url}")
             print(e)
@@ -45,3 +47,24 @@ class BaseParser(ABC):
     def parse(self):
         self.get_page()
         self.make_soup()
+
+
+class DatetimeService:
+    RFC_822_FORMATS = ["%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S %Z"]
+
+    def from_str(self, string: str) -> datetime:
+        date = None
+
+        for format in self.RFC_822_FORMATS:
+            try:
+                date = datetime.strptime(string, format)
+            except ValueError:
+                pass
+
+        if date is None:
+            raise ValueError("Invalid date format")
+
+        return date
+
+    def to_utc(self, date: datetime) -> datetime:
+        return date.astimezone(timezone.utc)

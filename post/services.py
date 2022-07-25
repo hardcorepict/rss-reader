@@ -1,4 +1,5 @@
-from app.base.services import BaseService
+from app.base.services import BaseParser, BaseService, DatetimeService
+from channel.models import Channel
 
 from .exceptions import AlreadyBookmarked, AlreadyRead, NotBookmarkedYet, NotReadYet
 from .models import Action, Post
@@ -46,3 +47,40 @@ class PostActionService(BaseService):
 
         action.bookmarked = False
         action.save()
+
+
+class PostParser(BaseParser):
+    def __init__(self, channel: Channel):
+        super().__init__(url=channel.url, parser="xml")
+        self.channel = channel
+
+    def get_posts(self):
+        self.parse()
+        raw_posts = self.soup.find_all("item")
+        posts = [self.make_post(post) for post in raw_posts]
+        return posts
+
+    def make_post(self, post_data) -> Post:
+        kwargs = {
+            "title": post_data.title.text,
+            "url": post_data.link.text,
+            "description": post_data.description.text,
+            "channel": self.channel,
+        }
+        date_srv = DatetimeService()
+        try:
+            published_date = date_srv.to_utc(date_srv.from_str(post_data.pubDate.text))
+        except ValueError:
+            return
+
+        author = post_data.creator.text if post_data.creator else self.channel.title
+        kwargs.update({"author": author, "published_date": published_date})
+        return Post(**kwargs)
+
+
+class PostService:
+    def __init__(self):
+        self.model = Post
+
+    def bulk_create(self, posts: list[Post]) -> None:
+        self.model.objects.bulk_create(posts, ignore_conflicts=True)

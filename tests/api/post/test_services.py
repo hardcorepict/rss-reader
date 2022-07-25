@@ -1,5 +1,3 @@
-from ast import Subscript
-
 import factories as f
 import pytest
 
